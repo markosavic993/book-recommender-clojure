@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: org.webjars/bootstrap:4.0.0-alpha.5">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/webjars/bootstrap/4.0.0-alpha.5/bootstrap-4.0.0-alpha.5.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

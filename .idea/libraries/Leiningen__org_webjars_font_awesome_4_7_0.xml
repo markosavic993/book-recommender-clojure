@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Leiningen: org.webjars/font-awesome:4.7.0">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/org/webjars/font-awesome/4.7.0/font-awesome-4.7.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
