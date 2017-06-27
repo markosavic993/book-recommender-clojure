@@ -27,7 +27,9 @@
                  [ring/ring-defaults "0.3.0"]
                  [selmer "1.10.7"]
                  [clojure-csv/clojure-csv "2.0.1"]
-                 [semantic-csv "0.2.1-alpha1"]]
+                 [semantic-csv "0.2.1-alpha1"]
+                 [org.clojure/java.jdbc "0.7.0-alpha3"]
+                 [mysql/mysql-connector-java "5.1.6"]]
 
   :min-lein-version "2.0.0"
 
