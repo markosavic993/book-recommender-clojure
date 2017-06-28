@@ -18,5 +18,5 @@
 (defn create-book-vector
   "Creates b tf/idf valued book vector"
   [mainBook refBook data]
-  (map #(* (calculate-tfidf % mainBook refBook data)) (keys mainBook)))
+  (map #(* (calculate-tfidf % mainBook refBook data)) [:author_name :author_movement :genre]))
 

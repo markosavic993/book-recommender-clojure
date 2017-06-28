@@ -11,7 +11,7 @@
   (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")
         expectedData ["Dostojevski", "Dostojevski", "Dostojevski", "Tolstoj", "Bajron", "Tolkin"]]
 
-    (is (= expectedData (extract-all-values-for-attribute :a data)))))
+    (is (= expectedData (extract-all-values-for-attribute :author_name data)))))
 
 (deftest test-calculate-tfidf
   (testing "calculation of tf/idf value for ref book for given book attribute")
@@ -22,6 +22,6 @@
         expectedTfIdfValue 0.3010299956639812
         expextedBookVector [0.3010299956639812 0.0 0.0]]
 
-    (is (= expectedTfIdfValue (calculate-tfidf :a mainBook reffBook data)))
+    (is (= expectedTfIdfValue (calculate-tfidf :author_name mainBook reffBook data)))
     (is (= expextedBookVector (create-book-vector mainBook reffBook data)))))
 

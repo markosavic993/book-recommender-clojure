@@ -8,8 +8,8 @@
   (testing "generating recommendations for given book")
   (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")
         refBook (first data)
-        expectedresult [{{:a "Dostojevski", :b "Drama", :c "srednji vek"}
+        expectedresult [{{:num "one" :author_name "Dostojevski", :author_movement "Drama", :genre "srednji vek"}
                          0.9999999999999998}
-                        {{:a "Dostojevski", :b "komedija", :c "novi vek"}
+                        {{:num "two" :author_name "Dostojevski", :author_movement "komedija", :genre "novi vek"}
                          0.26385258936279504}]]
     (is (= expectedresult (recommand-books refBook 2 data)))))
