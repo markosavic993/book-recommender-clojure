@@ -5,14 +5,17 @@
             [ring.util.http-response :as response]
             [clojure.java.io :as io]
             [book-recommender.db.db :as db]
-            [book-recommender.validator.validator :as validator]))
+            [book-recommender.validator.validator :as validator]
+            [ring.middleware.session :as session]
+            [book-recommender.finder.book-finder :as book-finder]
+            [book-recommender.engine.book-recommender-engine :as engine]))
 
 (defn home-page []
   (layout/render
     "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
 
-(defn about-page []
-  (layout/render "about.html"))
+(defn about-page [username]
+  (layout/render "about.html" {:docs (-> "README.md" io/resource slurp) :logged-in-user (db/search-for-user username)}))
 
 (defn login-page
   ([] (layout/render "login.html"))
@@ -27,8 +30,12 @@
   ([error-message]
     (layout/render "register.html" {:error-message error-message})))
 
-(defn dashboard-page [user]
+(defn dashboard-page
+  ([user]
   (layout/render "dashboard.html" {:logged-in-user user}))
+  ([user books]
+   (println "********************" user)
+   (layout/render "dashboard.html" {:logged-in-user user :found-books books})))
 
 (defn handle-login [username password]
   (if (not= 0 (count (validator/validate-login-form username password)))
@@ -52,14 +59,39 @@
       (successfull-register username password firstname lastname)
       (register-page "User with provided username already exists. Try with different username.")))))
 
+(defn handle-search-request [logged-in-user search-input]
+  (let [found-books (book-finder/find-by-name search-input)]
+    (dashboard-page logged-in-user found-books)))
+
+(defn handle-recommendation-request [book user]
+  (println(engine/recommend-for-book book 5))
+  (dashboard-page user (engine/recommend-for-book book 5)))
+
+(defn profile-page
+  ([username]
+  (layout/render "profile.html" {:logged-in-user (db/search-for-user username)}))
+  ([username newpwd repeatedpwd]
+    (db/update-password username newpwd)
+   (println (db/search-for-user username))
+    (login-page)))
+
+(defn contact-page [username]
+  (layout/render "contact.html" {:logged-in-user (db/search-for-user username)}))
+
 (defroutes home-routes
   (GET "/" [] (home-page))
-  (GET "/about" [] (about-page))
+  (GET "/about/:username" [username] (about-page username))
   (GET "/login" [] (login-page))
   (GET "/register" [] (register-page))
   (GET "/dashboard" [user] (dashboard-page user))
   (POST "/login" [username password]
     (handle-login username password))
   (POST "/register" [firstname lastname username password repeatpwd]
-    (handle-register firstname lastname username password repeatpwd)))
+    (handle-register firstname lastname username password repeatpwd))
+  (POST "/search" [logged-in-user search-input] (handle-search-request logged-in-user search-input))
+  (POST "/recommend" [book user] (handle-recommendation-request book user))
+  (GET "/profile/:username" [username] (profile-page username))
+  (GET "/dashboard/:username" [username] (dashboard-page (db/search-for-user username)))
+  (POST "/change-password" [username newpwd repeatedpwd] (profile-page username newpwd repeatedpwd))
+  (GET "/contact/:username" [username] (contact-page username)))
 
