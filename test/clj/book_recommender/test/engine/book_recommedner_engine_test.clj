@@ -12,4 +12,4 @@
                          0.9999999999999998}
                         {{:name "second book" :author_name "Dostojevski", :author_movement "komedija", :genre "novi vek"}
                          0.26385258936279504}]]
-    (is (= expectedresult (recommand-books refBook 2 data)))))
+    (is (= expectedresult (recommend-books refBook 2 data)))))

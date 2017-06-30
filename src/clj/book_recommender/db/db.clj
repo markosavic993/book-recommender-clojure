@@ -22,3 +22,8 @@
   "finds user by its username"
   [username]
   (first (jdbc/query db-spec ["SELECT * FROM user WHERE username = ?" username])))
+
+(defn update-password
+  "updates password for user"
+  [username newpwd]
+  (jdbc/update! db-spec "user" {:password newpwd} ["username = ?" username]))

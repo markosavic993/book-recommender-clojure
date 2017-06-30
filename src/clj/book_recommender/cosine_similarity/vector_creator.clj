@@ -10,13 +10,14 @@
 
 (defn calculate-tfidf
   "calculate tf/idf for referenced book for given book attribute"
-  [bookAttribute mainBook refBook data]
-  (* (tfidf/calculate-tf (get refBook bookAttribute) (get mainBook bookAttribute))
-     (tfidf/calculate-idf (get refBook bookAttribute) (extract-all-values-for-attribute bookAttribute data))))
+  [book-attribute ref-book other-book data]
+  (println "******" (get ref-book book-attribute))
+  (* (tfidf/calculate-tf (get other-book book-attribute) (get ref-book book-attribute))
+     (tfidf/calculate-idf (get other-book book-attribute) (extract-all-values-for-attribute book-attribute data))))
 
 
 (defn create-book-vector
   "Creates b tf/idf valued book vector"
-  [mainBook refBook data]
-  (map #(* (calculate-tfidf % mainBook refBook data)) [:author_name :author_movement :genre]))
+  [ref-book other-book data]
+  (map #(* (calculate-tfidf % ref-book other-book data)) [:author_name :author_movement :genre]))
 

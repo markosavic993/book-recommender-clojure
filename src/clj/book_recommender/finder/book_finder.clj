@@ -1,7 +1,7 @@
 (ns book-recommender.finder.book-finder
   (:require [book-recommender.reader.csv-reader :as reader]))
 
-(def path-to-data "C:\\dev\\projects\\book-recommender\\resources\\books.csv")
+(def path-to-data "resources/books.csv")
 
 (def books (reader/load-data-from-file path-to-data))
 
@@ -13,7 +13,7 @@
                 (.toUpperCase search-input))
     books))
   ([search-input data]
-   (filter
+   (distinct (filter
      #(.contains (.toUpperCase (get % :name))
                  (.toUpperCase search-input))
-     data)))
+     data))))
