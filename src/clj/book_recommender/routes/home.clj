@@ -64,7 +64,6 @@
     (dashboard-page logged-in-user found-books)))
 
 (defn handle-recommendation-request [book user]
-  (println(engine/recommend-for-book book 5))
   (dashboard-page user (engine/recommend-for-book book 5)))
 
 (defn profile-page
@@ -72,7 +71,6 @@
   (layout/render "profile.html" {:logged-in-user (db/search-for-user username)}))
   ([username newpwd repeatedpwd]
     (db/update-password username newpwd)
-   (println (db/search-for-user username))
     (login-page)))
 
 (defn contact-page [username]

@@ -11,7 +11,6 @@
 (defn calculate-tfidf
   "calculate tf/idf for referenced book for given book attribute"
   [book-attribute ref-book other-book data]
-  (println "******" (get ref-book book-attribute))
   (* (tfidf/calculate-tf (get other-book book-attribute) (get ref-book book-attribute))
      (tfidf/calculate-idf (get other-book book-attribute) (extract-all-values-for-attribute book-attribute data))))
 
