@@ -16,6 +16,7 @@
     {% style "/css/bootstrap.min.css" %}
     {% style "/assets/font-awesome/css/font-awesome.min.css" %}
     {% style "/css/dashboard.css" %}
+    {% style "/css/books.css" %}
 
     <!-- Custom CSS -->
     <style>
@@ -54,7 +55,7 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
-                    <a href="#">Books</a>
+                    <a href="{{servlet-cotext}}/books/{{logged-in-user.username}}">Books</a>
                 </li>
                 <li>
                     <a href="{{servlet-cotext}}/about/{{logged-in-user.username}}">About</a>

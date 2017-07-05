@@ -64,6 +64,7 @@
     (dashboard-page logged-in-user found-books)))
 
 (defn handle-recommendation-request [book user]
+  (db/save-searched-book book user)
   (dashboard-page user (engine/recommend-for-book book 5)))
 
 (defn profile-page
@@ -75,6 +76,10 @@
 
 (defn contact-page [username]
   (layout/render "contact.html" {:logged-in-user (db/search-for-user username)}))
+
+(defn books-page [username]
+  (layout/render "books.html" {:logged-in-user (db/search-for-user username)
+                               :searched-books (db/get-books-searched-by-user username)}))
 
 (defroutes home-routes
   (GET "/" [] (home-page))
@@ -91,5 +96,6 @@
   (GET "/profile/:username" [username] (profile-page username))
   (GET "/dashboard/:username" [username] (dashboard-page (db/search-for-user username)))
   (POST "/change-password" [username newpwd repeatedpwd] (profile-page username newpwd repeatedpwd))
-  (GET "/contact/:username" [username] (contact-page username)))
+  (GET "/contact/:username" [username] (contact-page username))
+  (GET "/books/:username" [username] (books-page username)))
 

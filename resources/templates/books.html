@@ -1,0 +1,110 @@
+{% extends "dashboard-base.html" %}
+{% block content %}
+<!-- 1st row verticaly centered text in the square columns -->
+{% for book in searched-books %}
+<div class="wrapper">
+    <div class="square">
+        <div class="content">
+            <div class="table">
+                <div class="table-cell">
+                    <ul class="un_list">{{book.name}} :
+                        <li class="list_item">Author: {{book.author_name}}</li>
+                        <li class="list_item">Movement: {{book.author_movement}}</li>
+                        <li class="list_item">Genre: {{book.genre}}</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endfor %}
+<!--<div class="square">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell numbers">-->
+                <!--98%-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="square">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell numbers">-->
+                <!--3.9/5-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 2nd row verticaly centered images in square columns &ndash;&gt;-->
+
+<!--<div class="square">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell">-->
+                <!--<img class="rs" src="https://farm3.staticflickr.com/2878/10944255073_973d2cd25c.jpg"/>-->
+                <!--Responsive image.-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="square">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell">-->
+                <!--<img class="rs" src="https://farm9.staticflickr.com/8461/8048823381_0fbc2d8efb.jpg"/>-->
+                <!--Responsive image.-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="square">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell">-->
+                <!--<img class="rs" src="https://farm5.staticflickr.com/4144/5053682635_b348b24698.jpg"/>-->
+                <!--Responsive image.-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+
+<!--&lt;!&ndash; 3rd row responsive images in background with centered content &ndash;&gt;-->
+
+<!--<div class="square bg img1">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell">-->
+                <!--Centered responsive images as background with centered content over it.-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="square bg img2">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell">-->
+                <!--Again-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--<div class="square bg img3">-->
+    <!--<div class="content">-->
+        <!--<div class="table">-->
+            <!--<div class="table-cell">-->
+                <!--And again-->
+            <!--</div>-->
+        <!--</div>-->
+    <!--</div>-->
+<!--</div>-->
+<!--&lt;!&ndash; END OF LAYOUT, following juts for the demo &ndash;&gt;-->
+
+<!--<div id="bottom">-->
+    <!--<p>If you want to see this grid only with responsive images, you can check this out:<br/>-->
+        <!--<a href="http://jsfiddle.net/webtiki/MpXYr/2/"> Responsive 3x3 square image grid </a></p>-->
+    <!--<a href="http://stackoverflow.com/users/1811992/web-tiki">web-tiki</a>-->
+<!--</div>-->
+{% endblock %}
