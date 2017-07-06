@@ -17,10 +17,6 @@
             </form>
 
             <br>
-            <div>
-                <label for="num-recommendations"> Insert number of recommendations you want:</label>
-                <input id="num-recommendations" name="num-recommednations" type="text" value="5">
-            </div>
 
             <div class="table-responsive">
                 <table class="table-striped table-hover">
@@ -40,12 +36,11 @@
                         <td><a href="{{book.uri}}">{{book.uri}}</a></td>
                         <td>
                             <form action="/recommend" method="post">
+                                <input type="text" name="num-of-recommendations" value="5" placeholder="Number of recommendations...">
                                 <input type="hidden" name="book" value="{{book}}">
                                 <input type="hidden" name="user" value="{{logged-in-user}}">
                                 <p align="center" data-placement="top" data-toggle="tooltip" title="Recommend">
-                                    <input type="submit" class="btn btn-primary btn-xs" data-title="Recommend"
-                                           data-toggle="modal" data-target="#edit">
-                                    <span class="glyphicon glyphicon-book"></span>
+                                    <input type="submit" class="btn btn-primary btn-xs" data-title="Recommend">
                                 </p>
                             </form>
                         </td>

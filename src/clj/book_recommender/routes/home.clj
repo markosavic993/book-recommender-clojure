@@ -66,9 +66,10 @@
 (defn recommendations-page [user recommended-books]
   (layout/render "recommendations.html" {:logged-in-user user :recommended-books recommended-books}))
 
-(defn handle-recommendation-request [book user]
+(defn handle-recommendation-request [book user num-recommendations]
+  (println num-recommendations)
   (db/save-searched-book book user)
-  (recommendations-page user (engine/recommend-for-book book 5)))
+  (recommendations-page user (engine/recommend-for-book book (read-string num-recommendations))))
 
 (defn profile-page
   ([username]
@@ -95,7 +96,8 @@
   (POST "/register" [firstname lastname username password repeatpwd]
     (handle-register firstname lastname username password repeatpwd))
   (POST "/search" [logged-in-user search-input] (handle-search-request logged-in-user search-input))
-  (POST "/recommend" [book user] (handle-recommendation-request book user))
+  (POST "/recommend" [num-of-recommendations book user]
+    (handle-recommendation-request book user num-of-recommendations))
   (GET "/profile/:username" [username] (profile-page username))
   (GET "/dashboard/:username" [username] (dashboard-page (db/search-for-user username)))
   (POST "/change-password" [username newpwd repeatedpwd] (profile-page username newpwd repeatedpwd))
