@@ -1,7 +1,7 @@
 (ns book-recommender.finder.book-finder
   (:require [book-recommender.reader.csv-reader :as reader]))
 
-(def path-to-data "resources/bookDataSet.csv")
+(def path-to-data "resources/books.csv")
 
 (def books (reader/load-data-from-file path-to-data))
 

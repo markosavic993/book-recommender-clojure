@@ -1,0 +1,29 @@
+{% extends "dashboard-base.html" %}
+{% block content %}
+<a href="{{servlet-context}}/dashboard/{{logged-in-user.username}}" class="btn btn-primary btn-lg">Another recommendation</a>
+<p class="lead">Here are recommended books for given input:</p>
+<br>
+<div class="table-responsive">
+    <table class="table-striped table-hover">
+        <thead>
+        <tr>
+            <td>Book name</td>
+            <td>Author name</td>
+            <td>URI</td>
+            <td>Abstract</td>
+        </tr>
+        </thead>
+        <tbody>
+        {% for book in recommended-books %}
+        <tr>
+            <td>{{book.name}}</td>
+            <td>{{book.author_name}}</td>
+            <td><a href="{{book.uri}}">{{book.uri}}</a></td>
+            <td>{{book.abstract}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+
+    </table>
+</div>
+{% endblock %}

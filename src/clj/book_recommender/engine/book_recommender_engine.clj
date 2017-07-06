@@ -4,7 +4,7 @@
             [book-recommender.reader.csv-reader :as reader]
             [book-recommender.finder.book-finder :refer :all]))
 
-(def path-to-production-data "resources/bookDataSet.csv")
+(def path-to-production-data "resources/books.csv")
 
 (def book-data-set (reader/load-data-from-file path-to-production-data))
 

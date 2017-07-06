@@ -63,9 +63,12 @@
   (let [found-books (book-finder/find-by-name search-input)]
     (dashboard-page logged-in-user found-books)))
 
+(defn recommendations-page [user recommended-books]
+  (layout/render "recommendations.html" {:logged-in-user user :recommended-books recommended-books}))
+
 (defn handle-recommendation-request [book user]
   (db/save-searched-book book user)
-  (dashboard-page user (engine/recommend-for-book book 5)))
+  (recommendations-page user (engine/recommend-for-book book 5)))
 
 (defn profile-page
   ([username]
