@@ -7,6 +7,7 @@
             [book-recommender.db.db :as db]
             [book-recommender.validator.validator :as validator]
             [ring.middleware.session :as session]
+            [ring.util.response :as res]
             [book-recommender.finder.book-finder :as book-finder]
             [book-recommender.engine.book-recommender-engine :as engine]))
 
@@ -61,13 +62,12 @@
 
 (defn handle-search-request [logged-in-user search-input]
   (let [found-books (book-finder/find-by-name search-input)]
-    (dashboard-page logged-in-user found-books)))
+    (dashboard-page (read-string logged-in-user) found-books)))
 
 (defn recommendations-page [user recommended-books]
-  (layout/render "recommendations.html" {:logged-in-user user :recommended-books recommended-books}))
+  (layout/render "recommendations.html" {:logged-in-user (read-string user) :recommended-books recommended-books}))
 
 (defn handle-recommendation-request [book user num-recommendations]
-  (println num-recommendations)
   (db/save-searched-book book user)
   (recommendations-page user (engine/recommend-for-book book (read-string num-recommendations))))
 
@@ -86,7 +86,7 @@
                                :searched-books (db/get-books-searched-by-user username)}))
 
 (defroutes home-routes
-  (GET "/" [] (home-page))
+  (GET "/" [] (res/redirect "/login"))
   (GET "/about/:username" [username] (about-page username))
   (GET "/login" [] (login-page))
   (GET "/register" [] (register-page))
