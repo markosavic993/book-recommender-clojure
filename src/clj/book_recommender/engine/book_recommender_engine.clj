@@ -2,7 +2,8 @@
   (:require [book-recommender.cosine-similarity.vector-creator :as creator]
             [book-recommender.cosine-similarity.cosine-similarity-calculator :as calculator]
             [book-recommender.reader.csv-reader :as reader]
-            [book-recommender.finder.book-finder :refer :all]))
+            [book-recommender.finder.book-finder :refer :all]
+            [medley.core :refer :all]))
 
 (def path-to-production-data "resources/books.csv")
 
@@ -18,7 +19,7 @@
         valuedBooksVector (into [] (map #(calculator/calculate-cosine-similarity ref-book-vector %) vectors))
         book-similarity-map (sort-by :value > (remove #(= (:book %) ref-book) (map (fn [key value] {:book key :value value}) data valuedBooksVector)))]
         (into [] (take num-of-recommendations
-                       book-similarity-map))))
+                       (distinct-by #(:uri (:book %)) book-similarity-map)))))
 
 (defn recommend-for-book
   "recommends books for given input for production data"

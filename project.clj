@@ -29,7 +29,8 @@
                  [clojure-csv/clojure-csv "2.0.1"]
                  [semantic-csv "0.2.1-alpha1"]
                  [org.clojure/java.jdbc "0.7.0-alpha3"]
-                 [mysql/mysql-connector-java "5.1.6"]]
+                 [mysql/mysql-connector-java "5.1.6"]
+                 [medley "1.0.0"]]
 
   :min-lein-version "2.0.0"
 
