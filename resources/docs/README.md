@@ -387,8 +387,8 @@ Validating user input was also a great opportunity to practice writing *Clojure*
 
 After successful login/register, user will be redirected to *dashboard page* which is the main point of the application. 
 
-![Failed login](resources/public/img/login_failed.PNG)
-![Successful login](resources/public/img/login_ok.PNG)
+![Failed login](../public/img/login_failed.PNG)
+![Successful login](../public/img/login_ok.PNG)
 ```clojure
 (defn dashboard-page
   ([user]
@@ -397,12 +397,12 @@ After successful login/register, user will be redirected to *dashboard page* whi
    (layout/render "dashboard.html" {:logged-in-user user :found-books books})))
 ```
 
-![Dashboard page](resources/public/img/dashboard.PNG)
+![Dashboard page](../public/img/dashboard.PNG)
 
 As you can see, page is rendered with different input parameters, which is in *Clojure* known as [multi-arity function](http://clojure-doc.org/articles/language/functions.html#multi-arity-functions)
 
 After that, user enters search query, which returns books that matches user's input.
-![Search result](resources/public/img/search.PNG)
+![Search result](../public/img/search.PNG)
 ```clojure
 (def path-to-data "resources/books.csv")
 
@@ -427,7 +427,7 @@ After that, user enters search query, which returns books that matches user's in
 The second version of the function (with two arguments) is used for testing.
 
 Finally, user choose book and enters the number of recommendations wanted. After the ***submit*** button is clicked, *recommendation engine* will provide desired number of recommendations.
-![Recommended books](resources/public/img/one_recommendation.PNG)
+![Recommended books](../public/img/one_recommendation.PNG)
 ```clojure
 (def path-to-production-data "resources/books.csv")
 
@@ -454,7 +454,7 @@ Finally, user choose book and enters the number of recommendations wanted. After
 ```
 
 On the *books page*, user can see all the books that he have searched for:  
-![Searched books](resources/public/img/books.PNG)
+![Searched books](../public/img/books.PNG)
 ```clojure
 (defn books-page [username]
   (layout/render "books.html" {:logged-in-user (db/search-for-user username)

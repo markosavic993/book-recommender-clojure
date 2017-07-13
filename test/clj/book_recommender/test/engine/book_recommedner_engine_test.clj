@@ -9,13 +9,15 @@
   (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")
         refBook (first data)
         expectedresult [{:book
-                                {:name "second book",
+                                {:uri "u2",
+                                 :name "second book",
                                  :author_name "Dostojevski",
                                  :author_movement "komedija",
                                  :genre "novi vek"},
                          :value 0.26385258936279504}
                         {:book
-                                {:name "crime and punishment",
+                                {:uri "u3",
+                                 :name "crime and punishment",
                                  :author_name "Dostojevski",
                                  :author_movement "roman",
                                  :genre "rusija"},

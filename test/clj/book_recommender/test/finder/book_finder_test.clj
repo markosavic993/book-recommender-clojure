@@ -7,15 +7,18 @@
   (testing "finding books that match user's search input")
   (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")
         search-input "bOOk"
-        expectedresult [{:name "first book",
+        expectedresult [{:uri "u1",
+                         :name "first book",
                          :author_name "Dostojevski",
                          :author_movement "Drama",
                          :genre "srednji vek"},
-                        {:name "second book",
+                        {:uri "u2",
+                         :name "second book",
                          :author_name "Dostojevski",
                          :author_movement "komedija",
                          :genre "novi vek"},
-                        {:name "el book",
+                        {:uri "u5",
+                         :name "el book",
                          :author_name "Bajron",
                          :author_movement "drama",
                          :genre "romantizam"}]]

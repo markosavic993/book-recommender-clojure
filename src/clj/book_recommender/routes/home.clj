@@ -16,7 +16,7 @@
     "home.html" {:docs (-> "docs/docs.md" io/resource slurp)}))
 
 (defn about-page [username]
-  (layout/render "about.html" {:docs (-> "README.md" io/resource slurp) :logged-in-user (db/search-for-user username)}))
+  (layout/render "about.html" {:docs (-> "docs/README.md" io/resource slurp) :logged-in-user (db/search-for-user username)}))
 
 (defn login-page
   ([] (layout/render "login.html"))
@@ -35,7 +35,6 @@
   ([user]
   (layout/render "dashboard.html" {:logged-in-user user}))
   ([user books]
-   (println "********************" user)
    (layout/render "dashboard.html" {:logged-in-user user :found-books books})))
 
 (defn handle-login [username password]
