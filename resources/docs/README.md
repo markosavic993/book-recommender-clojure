@@ -4,7 +4,7 @@
 
 Application can be started from the terminal, simply by runnung ***lein run***. Then, the endpoint in the browser is ***localhost:3000***. 
 
-##About the project
+##  About the project
 
 The aim of this project was to investigate Clojure as a language with as many aspects of it as possible (writing algorithms, database, template engines, validation, testing, ...) as a part of technology stack in software engineering. The idea was to write Machine Learning application for recommending books based on book's attributes of selected book, using cosine similarity algorithm.
 
@@ -20,7 +20,7 @@ The project workflow consists of the following steps:
 *	Implementation
 *	Technical realisation
 
-##Collecting data from DBPedia and preprocessing
+##  Collecting data from DBPedia and preprocessing
 
 Datasets used in this project are extracted from the DBpedia, the RDF-based version of Wikipedia. [RDF](https://www.w3.org/RDF/)(Resource Description Framework) is a standard model for data interchange on the Web. For searching DBPedia we have used [SPARQL](https://www.w3.org/TR/rdf-sparql-query/) (The Simple Protocol and RDF Query Language), which makes possible to ask complex queries to DBpedia.
 
@@ -63,9 +63,9 @@ http://dbpedia.org/resource/The_Village_of_Stepanchikovo,The Village of Stepanch
 ```
 *Listing 2 - Data snippet*
 
-##Building recommendation system
+##  Building recommendation system
 
-###Vector Space Model
+### Vector Space Model
 
 In order to compute the similarities, [VSM (Vector Space Model)](https://en.wikipedia.org/wiki/Vector_space_model) is implemented. In VSM non-binary weights are assigned to index terms in queries and in documents (represented as sets of terms), and are used to compute the degree of similarity between each document in the collection and the query. [1]
 
