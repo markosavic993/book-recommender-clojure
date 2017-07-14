@@ -2,23 +2,18 @@
 
 ## Running the application
 
-Application can be started from the terminal, simply by runnung ***lein run***. Then, the endpoint in the browser is ***localhost:3000***. 
+Application can be started from the terminal, simply by runnung ***lein run***. Then, the endpoint in the browser is ***localhost:3000.*** 
 
 ##  About the project
 
-The aim of this project was to investigate Clojure as a language with as many aspects of it as possible (writing algorithms, database, template engines, validation, testing, ...) as a part of technology stack in software engineering. The idea was to write Machine Learning application for recommending books based on book's attributes of selected book, using cosine similarity algorithm.
+The aim of this project was to investigate Clojure as a language with as many aspects of it as possible (writing algorithms, database, template engines, validation, testing, ...) as a part of technology stack in software engineering. The idea was to write Machine Learning application for recommending books based on book's attributes of selected book, using cosine similarity algorithm. Actually, the idea was to rewrite and enrich with many new things application written in Java ([link](https://github.com/markosavic993/BookRecommendation)).
 
-Though the Web was originally conceived to be used by human users, new data-oriented content have been produced and made available on the Web with the introduction and development of the [Semantic Web idea](https://en.wikipedia.org/wiki/Semantic_Web). In particular,
-more recently there has been a growing interest in the [Linked Open Data (LOD) initiative](http://linkeddata.org). The cornerstone of Linked Open Data is making available free and open RDF datasets linked with each other. 
-
-The project was inspired by the paper by Mirizzi et al [1], where authors describe a web application for movie recommendation based on movie's attributes.
 
 The project workflow consists of the following steps:
 *	Collecting data from [DBPedia](http://wiki.dbpedia.org/) and preprocessing
 *	Building recommendation system
 *   Building of Clojure Web application
 *	Implementation
-*	Technical realisation
 
 ##  Collecting data from DBPedia and preprocessing
 
@@ -51,7 +46,7 @@ FILTER (lang(?authorName) = "en" && lang(?bookName) = "en" && lang(?bookAbstract
 *Listing 1 - SPARQL query for collecting data*
 
 The results of this query are available [here](http://dbpedia.org/sparql?default-graph-uri=http%3A%2F%2Fdbpedia.org&query=PREFIX+rdf%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F1999%2F02%2F22-rdf-syntax-ns%23%3E%0D%0APREFIX+rdfs%3A+%3Chttp%3A%2F%2Fwww.w3.org%2F2000%2F01%2Frdf-schema%23%3E%0D%0APREFIX+dbpedia%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fresource%2F%3E%0D%0APREFIX+ontology%3A+%3Chttp%3A%2F%2Fdbpedia.org%2Fontology%2F%3E%0D%0A%0D%0Aselect+distinct+%3FbookURI+%3FbookName+%3FauthorName+%3FauthorMovement+%3FbookGenre+%3FbookAbstract%0D%0Awhere+%7B%0D%0A%3FbookURI+rdf%3Atype+ontology%3ABook+.%0D%0A%3FbookURI++ontology%3Aauthor+%3Fauthor+.%0D%0A%3FbookURI++ontology%3Aabstract+%3FbookAbstract+.+%0D%0A%3FbookURI++ontology%3AliteraryGenre+%3Fgenre+.+%0D%0A%3FbookURI+rdfs%3Alabel+%3FbookName+.%0D%0A%0D%0A%3Fauthor+rdfs%3Alabel+%3FauthorName+.+%0D%0A%3Fauthor+ontology%3Amovement+%3Fmovement+.%0D%0A%3Fgenre+rdfs%3Alabel+%3FbookGenre+.+%0D%0A%3Fmovement+rdfs%3Alabel+%3FauthorMovement+.%0D%0AFILTER+%28regex%28%3FauthorMovement%2C+%22Romanticism%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement%2C+%22Realism%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement%2C+%22Social+novel%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement%2C+%2219th-century+French+literature%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement%2C+%22Proletarian+literature%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement%2C+%22Science+fiction%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement%2C+%22Detective+fiction%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement+%2C%22Impressionism%22%2C+%22i%22%29+%7C%7C+regex%28%3FauthorMovement+%2C%22Modernism%22%2C+%22i%22%29%29%0D%0AFILTER+%28lang%28%3FauthorName%29+%3D+%22en%22+%26%26+lang%28%3FbookName%29+%3D+%22en%22+%26%26+lang%28%3FbookAbstract%29+%3D+%22en%22+%26%26+lang%28%3FauthorMovement%29+%3D+%22en%22+%26%26+lang%28%3FbookGenre%29+%3D+%22en%22%29+%0D%0A%0D%0A%0D%0A%7D&format=text%2Fhtml&CXML_redir_for_subjs=121&CXML_redir_for_hrefs=&timeout=30000&debug=on).
-Extracted data is stored into a CSV file [data/bookDataSet.csv](https://raw.githubusercontent.com/markosavic993/BookRecommendation/master/data/bookDataSet.csv). Snippet of the collected data is given in the Listing 2.
+Extracted data is stored into a CSV file [resources/books.csv](https://github.com/markosavic993/book-recommender-clojure/blob/master/resources/books.csv). Snippet of the collected data is given in the Listing 2.
 ```
 uri,name,author_name,author_movement,genre,abstract
 
@@ -67,16 +62,16 @@ http://dbpedia.org/resource/The_Village_of_Stepanchikovo,The Village of Stepanch
 
 ### Vector Space Model
 
-In order to compute the similarities, [VSM (Vector Space Model)](https://en.wikipedia.org/wiki/Vector_space_model) is implemented. In VSM non-binary weights are assigned to index terms in queries and in documents (represented as sets of terms), and are used to compute the degree of similarity between each document in the collection and the query. [1]
+In order to compute the similarities, [VSM (Vector Space Model)](https://en.wikipedia.org/wiki/Vector_space_model) is implemented. In VSM non-binary weights are assigned to index terms in queries and in documents (represented as sets of terms), and are used to compute the degree of similarity between each document in the collection and the query. 
 
 Book attributes that are used as a base for recommendation are:
-* author_name - name of a book's author,
-* genre - a genre of a book,
-* author_movement - the literary movement of a book's author.
+* author_name -> name of a book's author,
+* genre -> a genre of a book,
+* author_movement -> the literary movement of a book's author.
 
 So, the goal is to create a vector of values for the listed attributes for every book and calculate its similarity score with vectors of all other books in the dataset.
 
-To increase precision, it's recommended to use TFIDF values for creating vectors. TF(term-frequency) is a measure of how many times the terms present in vocabulary E(*t*) are present in the documents, we define the term-frequency as a couting function [4]:
+To increase precision, it's recommended to use TFIDF values for creating vectors. TF(term-frequency) is a measure of how many times the terms present in vocabulary E(*t*) are present in the documents, we define the term-frequency as a couting function:
 
 ![tf](http://s0.wp.com/latex.php?latex=+++%5Cmathrm%7Btf%7D%28t%2Cd%29+%3D+%5Csum%5Climits_%7Bx%5Cin+d%7D+%5Cmathrm%7Bfr%7D%28x%2C+t%29+++&bg=ffffff&fg=000000&s=0)
 
@@ -118,11 +113,11 @@ In *Listing 4*, a snippet of Clojure code for calculating *idf* values for provi
 
 ### Cosine similarity
 
-[The cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity) between two vectors (or two documents in the Vector Space) is a measure that calculates the cosine of the angle between them. This metric is a measurement of orientation and not magnitude, it can be seen as a comparison between documents on a normalized space. The equation for calculating cosine similarity is depicted in *Figure 1* [2]:
+[The cosine similarity](https://en.wikipedia.org/wiki/Cosine_similarity) between two vectors (or two documents in the Vector Space) is a measure that calculates the cosine of the angle between them. This metric is a measurement of orientation and not magnitude, it can be seen as a comparison between documents on a normalized space. The equation for calculating cosine similarity is depicted in *Figure 1*:
 
 ![equation](http://cs.carleton.edu/cs_comps/0910/netflixprize/final_results/knn/img/knn/cos.png "Figure 1 - Cosine similarity equation") *Figure 1 - Cosine similarity equation*
 
-The dividend is a dot product of those vectors, and the divisor is a product of vector intensities. Cosine Similarity will generate a metric that says how related are two documents by looking at the angle instead of magnitude. So, the more the result is closer to 1, two vectors (documents/books) are more similar. On the other hand, if the result tends to 0, it means that vectors are opposed (the angle between them is 90 degrees). [3]
+The dividend is a dot product of those vectors, and the divisor is a product of vector intensities. Cosine Similarity will generate a metric that says how related are two documents by looking at the angle instead of magnitude. So, the more the result is closer to 1, two vectors (documents/books) are more similar. On the other hand, if the result tends to 0, it means that vectors are opposed (the angle between them is 90 degrees).
 
 In the *Listing 5*, Clojure code for calculating cosine similarity is given.
 ```clojure
@@ -182,15 +177,17 @@ In the *Listing 5*, Clojure code for calculating cosine similarity is given.
                  [mysql/mysql-connector-java "5.1.6"]
                  [medley "1.0.0"]]
 ``` 
+*Listing 6 - Dependency management in Clojure*
 
-The application is generated with [Luminus](http://www.luminusweb.net/), web framework for Clojure, as a plain web app, using command 
+The application is generated with [Luminus](http://www.luminusweb.net/), web framework for Clojure, as a plain web app, using command: 
 ```
 lein new luminus book-recommender.
 ```
+*Listing 7 - Generating empty Luminus web application*
 
 ### Routing
 
-For routing in  this app is used [Compojure](https://github.com/weavejester/compojure), a routing library for [Ring](https://github.com/ring-clojure/ring) (a low-level interface and library for building web applications).
+For routing in  this app is used [Compojure](https://github.com/weavejester/compojure), a routing library for [Ring](https://github.com/ring-clojure/ring) (a low-level interface and library for building web applications). Routing with *Compojure* comes down to mapping routes to corresponding handler functions, where all the routes are wrapped with flexible and user-friendly middleware provided by *Ring*.
 ```clojure
 (def app-routes
   (routes
@@ -225,7 +222,7 @@ For routing in  this app is used [Compojure](https://github.com/weavejester/comp
   (GET "/contact/:username" [username] (contact-page username))
   (GET "/books/:username" [username] (books-page username)))
 ```
-
+*Listing 7 - Routing in Clojure*
 
 ### Template engine
 
@@ -253,6 +250,7 @@ As a template engine, for the purposes of this project, is used [Selmer](https:/
                     {% endfor %}
                     </tbody>
 ```
+*Listing 8 - Basic templating with Selmer*
 
 Also, with *Selmer*, reusing of templates is very easy which is presented in the following code snippet:
 ```html
@@ -270,6 +268,7 @@ Also, with *Selmer*, reusing of templates is very easy which is presented in the
 </div>
 {% endblock %}
 ```
+*Listing 9 - Template reusing with Selmer*
 
 ### Database
 
@@ -295,9 +294,12 @@ For managing database implementation is used [**java.jdbc**](https://github.com/
              (jdbc/query db-spec
                          ["SELECT * FROM searched_books WHERE user = ?" username]))))
 ```
+*Listing 10 - Usage of java.jdbc library*
 
 Database is present in path: *resources/sql*.
 
+In the following figure, you can see the class diagram of the application.
+![Class diagram](../public/img/class_diagram.PNG)*Figure 2 - Class diagram*
 ### Testing
 
 All the code where algorithm is implemented is tested, Libraries used for unit tests of the algorithm and routing are [clojure.test](https://clojure.github.io/clojure/clojure.test-api.html) and [ring.mock](https://github.com/ring-clojure/ring-mock). Testing in *Clojure* is very descriptive and makes it easy to read and write. Here are the examples of tests:
@@ -336,16 +338,18 @@ All the code where algorithm is implemented is tested, Libraries used for unit t
                          :genre "romantizam"}]]
     (is (= expectedresult (find-by-name search-input data)))))
 ```
+*Listing 11 - Testing in Clojure*
 
 Tests (or specific test) could be run using leiningen tasks:
 ```
 lein test
 lein test :only book-recommender.test.engine.book-recommedner-engine-test/test-recommender
 ```
+*Listing 12 - Running tests in Clojure*
 
 ### Validation
 
-Validating user input was also a great opportunity to practice writing *Clojure* code and write tests (see the following listing).
+Validating user input was also a great opportunity to practice writing *Clojure* code and to write tests (see the following listing).
 ```clojure
 (defn validate-login-form
   "validates login form (username and password)"
@@ -382,6 +386,7 @@ Validating user input was also a great opportunity to practice writing *Clojure*
     (is (= bad-password-message (validate-login-form ok-username password-without-number)))
     (is (= "" (validate-login-form ok-username ok-password)))))
 ```
+*Listing 13 - basic validation using core Clojure functionalities*
 
 ## Workflow of the application
 
@@ -397,9 +402,11 @@ After successful login/register, user will be redirected to *dashboard page* whi
    (layout/render "dashboard.html" {:logged-in-user user :found-books books})))
 ```
 
+*Listing 14 - Rendering dashboard page*
+
 ![Dashboard page](../public/img/dashboard.PNG)
 
-As you can see, page is rendered with different input parameters, which is in *Clojure* known as [multi-arity function](http://clojure-doc.org/articles/language/functions.html#multi-arity-functions)
+As you can see, page is rendered with different input parameters, which is in *Clojure* known as [multi-arity function](http://clojure-doc.org/articles/language/functions.html#multi-arity-functions).
 
 After that, user enters search query, which returns books that matches user's input.
 ![Search result](../public/img/search.PNG)
@@ -423,6 +430,7 @@ After that, user enters search query, which returns books that matches user's in
                            (.toUpperCase search-input))
                         data))))
 ```
+*Listing 15 - Searching books*
 
 The second version of the function (with two arguments) is used for testing.
 
@@ -452,6 +460,7 @@ Finally, user choose book and enters the number of recommendations wanted. After
                    num-of-recommendations
                    book-data-set)))
 ```
+*Listing 16 - Recommendation engine code*
 
 On the *books page*, user can see all the books that he have searched for:  
 ![Searched books](../public/img/books.PNG)
@@ -481,6 +490,15 @@ On the *books page*, user can see all the books that he have searched for:
 
 {% endfor %}
 ```
+*Listing 17 - Rendering of searched books with Selmer*
 
+
+##  Benchmarking
+
+The algorithm is providing reasonable and pretty good recommendations, but still is very open for possible improvements. For example:
+*   Considering one or more additional attributes as a recommendation parameters, which should make recommendations more precise.
+*   Provide additional ponders to book attributes (in addition to tf/idf) in order to make some attributes to contribute more (or less) to similarity score.
+
+Regarding *Clojure* development, it could be a good decision for writing these kind of applications because of its powerful and yet very user-friendly functional machinery. Also development is less verbose and much faster then it was when writing *Java* version of algorithm. On the other hand, one of the biggest aggravating circumstances was finding answer for some question which is mostly because the *Clojure* community is still growing.
 
 
