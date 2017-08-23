@@ -8,7 +8,7 @@
       (reduce + (map * vectorA vectorB)))
 
 (defn calculate-scalar-product-r
-  "return double value that represents scalar product of vectors"
+  "return double value that represents scalar product of vectors with reducers implementation"
   [vectorA vectorB]
   (r/fold + (map * vectorA vectorB)))
 

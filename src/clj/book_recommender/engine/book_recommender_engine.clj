@@ -23,7 +23,7 @@
                        (distinct-by #(:uri (:book %)) book-similarity-map)))))
 
 (defn recommend-books-r
-  "recommends books for given ref book"
+  "recommends books for given ref book with reducers implementation"
   [ref-book num-of-recommendations data]
   (let [ref-book-vector (creator/create-book-vector ref-book
                                                     ref-book

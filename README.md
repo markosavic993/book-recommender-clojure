@@ -495,6 +495,190 @@ On the *books page*, user can see all the books that he have searched for:
 
 ##  Benchmarking
 
+### Efficiency
+
+Regarding efficiency, the main point for improvements was algorithms part. Dealing with huge amount of data is very challenging, so striving for effective and efficient code which processes those data was one of the most important parts of this project. To achieve more efficient code one should combine using clojure embedded features and other libraries.   
+
+Benchmarking of the results is challenging by itself, especially on JVM. For this project, two techniques (approaches) were used:
+*   With [time](https://clojuredocs.org/clojure.core/time), Clojure function that evaluates expr and prints the time it took.
+*   With [Criterium](https://github.com/hugoduncan/criterium), great library which provides a lot of possibilities when it comes to benchmarking, like:
+    *   statistical processing of multiple evaluations
+    *   inclusion of a warm-up period, designed to allow the JIT compiler to optimise its code
+    *   purging of gc before testing, to isolate timings from GC state prior to testing
+    *   a final forced GC after testing to estimate impact of cleanup on the timing results
+    
+    
+####    core.reducers
+    
+    
+Reduce is different from map and filter. It must be able to operate across several items in the collection, in at least some way. In Map-Reduce frameworks, reduce tends to be the expensive operation; difficult to parallelize and more likely to be subject to resource constraints. 
+    
+[core.reducers](https://clojure.org/reference/reducers) library makes the reasonable choice of treating reduce singularly, and as a cornerstone of computations involving collections. A reducer is the combination of a reducible collection (a collection that knows how to reduce itself) with a reducing function (the "recipe" for what needs to be done during the reduction). The standard sequence operations are replaced with new versions that do not perform the operation but merely transform the reducing function.
+    
+In the following example, *reducers* functions are used instead of regular ones.
+    
+```clojure
+(defn calculate-scalar-product
+      "return double value that represents scalar product of vectors"
+      [vectorA vectorB]
+      (reduce + (map * vectorA vectorB)))
+
+(defn calculate-scalar-product-r
+  "return double value that represents scalar product of vectors with reducers implementation"
+  [vectorA vectorB]
+  (r/fold + (map * vectorA vectorB)))                    
+```    
+*Listing 18 - Basic usage of core.reducers*
+   
+As you can see, in *calculate-scalar-product-r* function, instead of *reduce*, *r/fold* is used (in namespace declaration: *:require [clojure.core.reducers :as r]*). Actually, what *fold* is doing is implementing parallel reduce and combine. It  takes a reducible collection and partitions it into groups of approximately n (default 512) elements. Each group is reduced using the reducef function. The reducef function will be called with no arguments to produce an identity value in each partition. The results of those reductions are then reduced with the combinef (defaults to reducef) function.    
+
+Results of that change are visible in next listing (notice the difference in *Execution time mean*):
+
+```
+Evaluation count : 6 in 6 samples of 1 calls.
+             Execution time mean : 1.340210 sec
+    Execution time std-deviation : 6.216734 ms
+   Execution time lower quantile : 1.332918 sec ( 2.5%)
+   Execution time upper quantile : 1.346282 sec (97.5%)
+                   Overhead used : 1.597674 ns
+   
+                   ---
+                   
+   Evaluation count : 6 in 6 samples of 1 calls.
+                Execution time mean : 1.250611 sec
+       Execution time std-deviation : 4.588666 ms
+      Execution time lower quantile : 1.246414 sec ( 2.5%)
+      Execution time upper quantile : 1.257205 sec (97.5%)
+                      Overhead used : 1.597674 ns                
+```
+*Listing 19 - Criterium output for given functions*
+
+Here is another example of using *core.reducers*:
+
+```clojure
+(defn recommend-books
+  "recommends books for given ref book"
+  [ref-book num-of-recommendations data]
+  (let [ref-book-vector (creator/create-book-vector ref-book
+                                                  ref-book
+                                                  data)
+        vectors (map #(creator/create-book-vector ref-book % data) data)
+        valuedBooksVector (into [] (map #(calculator/calculate-cosine-similarity ref-book-vector %) vectors))
+        book-similarity-map (sort-by :value > (remove #(= (:book %) ref-book) (map (fn [key value] {:book key :value value}) data valuedBooksVector)))]
+        (into [] (take num-of-recommendations
+                       (distinct-by #(:uri (:book %)) book-similarity-map)))))
+
+(defn recommend-books-r
+  "recommends books for given ref book with reducers implementation"
+  [ref-book num-of-recommendations data]
+  (let [ref-book-vector (creator/create-book-vector ref-book
+                                                    ref-book
+                                                    data)
+        vectors (r/map #(creator/create-book-vector ref-book % data) data)
+        valuedBooksVector (into [] (r/map #(calculator/calculate-cosine-similarity-r ref-book-vector %) vectors))
+        book-similarity-map (sort-by :value > (remove #(= (:book %) ref-book) (map (fn [key value] {:book key :value value}) data valuedBooksVector)))]
+    (into [] (r/take num-of-recommendations
+                   (distinct-by #(:uri (:book %)) book-similarity-map)))))
+
+(defn recommend-for-book
+  "recommends books for given input for production data"
+  [ref-book num-of-recommendations]
+  (into [] (r/map #(:book %) (recommend-books-r (read-string ref-book)
+                   num-of-recommendations
+                   book-data-set))))
+```
+*Listing 20 - Clojure example of switching to core.reducers in recommender-engine*
+
+And the corresponding benchmark output follows (now with using *time*):
+
+```
+**************
+Before core.reducers
+"Elapsed time: 5.132835 msecs"
+-----------------
+After core.reducers
+"Elapsed time: 3.8147 msecs"
+**************
+```
+*Listing 21 - Outputs of time function*
+
+####    Transients
+
+
+#### count vs empty?
+
+When checking if a collection has no elements in it, two approaches are used in this project. One of them is using [count](https://clojuredocs.org/clojure.core/count) funtion, and the other one is using [empty?](https://clojuredocs.org/clojure.core/empty_q). In this case, just switching to *count* instead of *empty?* results with great executing improvement. The reason lies in the source of the empty function. This function use sequences which is slow, so better performance are achieved just by getting count of elements and checking if it's zero.
+
+```clojure
+(defn calculate-idf
+      "returns double value that represents inverse document frequency"
+      [mainSet dataSet]
+      (if (empty? (filter #(= mainSet %) dataSet)) (throw (InvalidParameterException. "provided data entry is not from provided dataset")))
+      (Math/log10 (/ (count dataSet)
+                     (count (filter #(= mainSet %) dataSet)))))
+
+(defn calculate-idf-count
+  "returns double value that represents inverse document frequency with count implementation"
+  [mainSet dataSet]
+  (if (= 0 (count(filter #(= mainSet %) dataSet))) (throw (InvalidParameterException. "provided data entry is not from provided dataset")))
+  (Math/log10 (/ (count dataSet)
+                 (count (filter #(= mainSet %) dataSet)))))
+
+(defn calculate-idf-r
+  "returns double value that represents inverse document frequency with reducers implementation"
+  [mainSet dataSet]
+  (if (= 0 (count(into [] (r/filter #(= mainSet %) dataSet)))) (throw (InvalidParameterException. "provided data entry is not from provided dataset")))
+  (Math/log10 (/ (count dataSet)
+                 (count (into [] (r/filter #(= mainSet %) dataSet))))))
+``` 
+*Listing 22 - Implementation of empty, count and count + reducers*
+
+Notice that for the *core.reducers* [into[]](https://clojuredocs.org/clojure.core/into) is used alongside with reducing functions.
+Here is the benchmark comparison of those three approaches:
+
+```
+***Criterium output***
+
+Evaluation count : 6 in 6 samples of 1 calls.
+             Execution time mean : 1.134016 sec
+    Execution time std-deviation : 2.353265 ms
+   Execution time lower quantile : 1.131937 sec ( 2.5%)
+   Execution time upper quantile : 1.137771 sec (97.5%)
+                   Overhead used : 1.615899 ns
+
+Found 1 outliers in 6 samples (16.6667 %)
+	low-severe	 1 (16.6667 %)
+ Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+Evaluation count : 6 in 6 samples of 1 calls.
+             Execution time mean : 563.778952 ms
+    Execution time std-deviation : 5.969011 ms
+   Execution time lower quantile : 556.665642 ms ( 2.5%)
+   Execution time upper quantile : 571.156962 ms (97.5%)
+                   Overhead used : 1.615899 ns
+Evaluation count : 6 in 6 samples of 1 calls.
+             Execution time mean : 333.379145 ms
+    Execution time std-deviation : 5.313118 ms
+   Execution time lower quantile : 326.231790 ms ( 2.5%)
+   Execution time upper quantile : 338.363465 ms (97.5%)
+                   Overhead used : 1.615899 ns
+                   
+***Time output***
+                   
+**************
+Before core.reducers
+"Elapsed time: 1287.138953 msecs"
+-----------------
+After switching to empty?
+"Elapsed time: 589.396999 msecs"
+-----------------
+After core.reducers
+"Elapsed time: 391.387908 msecs"
+**************                   
+```
+*Listing 23 - Criterium and time benchmarking output*
+
+### Benchmark overview
+
 The algorithm is providing reasonable and pretty good recommendations, but still is very open for possible improvements. For example:
 *   Considering one or more additional attributes as a recommendation parameters, which should make recommendations more precise.
 *   Provide additional ponders to book attributes (in addition to tf/idf) in order to make some attributes to contribute more (or less) to similarity score.

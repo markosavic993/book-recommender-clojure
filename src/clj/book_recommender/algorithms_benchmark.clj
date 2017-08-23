@@ -60,3 +60,15 @@
     (quick-bench (recommend-books refBook 10 data))
     (quick-bench (recommend-books-r refBook 10 data))))
 
+(defn benchmark-recommender-time
+  []
+  (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")
+        refBook (first data)]
+    (println "**************")
+    (println "Before core.reducers")
+    (time (recommend-books refBook 10 data))
+    (println "-----------------")
+    (println "After core.reducers")
+    (time (recommend-books-r refBook 10 data))
+    (println "**************")))
+
