@@ -30,7 +30,9 @@
                  [semantic-csv "0.2.1-alpha1"]
                  [org.clojure/java.jdbc "0.7.0-alpha3"]
                  [mysql/mysql-connector-java "5.1.6"]
-                 [medley "1.0.0"]]
+                 [medley "1.0.0"]
+                 [org.clojure/math.numeric-tower "0.0.4"]
+                 [criterium "0.4.4"]]
 
   :min-lein-version "2.0.0"
 

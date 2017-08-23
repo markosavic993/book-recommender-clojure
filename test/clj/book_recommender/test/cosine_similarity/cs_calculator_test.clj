@@ -9,10 +9,21 @@
         vectorB [3 2 1]]
     (is (= 10 (calculate-scalar-product vectorA vectorB)))))
 
+(deftest test-scalar-product-r
+  (testing "calculation of scalar product of given vectors with implementation of core.reducers")
+  (let [vectorA  [1 2 3]
+        vectorB [3 2 1]]
+    (is (= 10 (calculate-scalar-product-r vectorA vectorB)))))
+
 (deftest test-vector-intensity
   (testing "calculation of intensity of given vector")
   (let [vectorA  [1 2 2]]
     (is (= 3.0 (calculate-intensity-of-vector vectorA)))))
+
+(deftest test-vector-intensity-r
+  (testing "calculation of intensity of given vector with implementation of core.reducers")
+  (let [vectorA  [1 2 2]]
+    (is (= 3.0 (calculate-intensity-of-vector-r vectorA)))))
 
 (deftest test-cosine-similarity
   (testing "calculation of cosine similarity of given vectors")

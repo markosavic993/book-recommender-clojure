@@ -19,3 +19,11 @@
         notMatchingDataSet ["C" "D"]]
     (is (= 0.3010299956639812 (calculate-idf param dataSet)))
     (is (thrown? InvalidParameterException (calculate-idf param notMatchingDataSet)))))
+
+(deftest test-idf-r
+  (testing "calculation of idf of given inputs with reducers implementation")
+  (let [param "A"
+        dataSet ["A" "A" "C" "B"]
+        notMatchingDataSet ["C" "D"]]
+    (is (= 0.3010299956639812 (calculate-idf-r param dataSet)))
+    (is (thrown? InvalidParameterException (calculate-idf param notMatchingDataSet)))))
