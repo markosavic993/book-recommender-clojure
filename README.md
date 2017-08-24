@@ -747,7 +747,7 @@ As mentioned before, tool used for benchmarking in this project is *Criterium*. 
 
 Note that **not** all of the presented changes provide significant efficiency improvement with small amount of data, but since in this project we're dealing with huge amount of data, they actually were very successful. 
 
-### Benchmark overview
+## Overview
 
 The algorithm is providing reasonable and pretty good recommendations, but still is very open for possible improvements. For example:
 *   Considering one or more additional attributes as a recommendation parameters, which should make recommendations more precise.
