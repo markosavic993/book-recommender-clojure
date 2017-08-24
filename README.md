@@ -497,10 +497,10 @@ On the *books page*, user can see all the books that he have searched for:
 
 ### Efficiency
 
-Regarding efficiency, the main point for improvements was algorithms part. Dealing with huge amount of data is very challenging, so striving for effective and efficient code which processes those data was one of the most important parts of this project. To achieve more efficient code one should combine using clojure embedded features and other libraries.   
+Regarding efficiency, the main point for improvements was algorithms part. Dealing with huge amount of data is very challenging, so striving for effective and efficient code which processes those data was one of the most important parts of this project. To achieve more efficient code one should combine usage of clojure embedded features and other libraries.   
 
 Benchmarking of the results is challenging by itself, especially on JVM. For this project, two techniques (approaches) were used:
-*   With [time](https://clojuredocs.org/clojure.core/time), Clojure function that evaluates expr and prints the time it took.
+*   With [time](https://clojuredocs.org/clojure.core/time), Clojure function that evaluates expression and prints the time it took.
 *   With [Criterium](https://github.com/hugoduncan/criterium), great library which provides a lot of possibilities when it comes to benchmarking, like:
     *   statistical processing of multiple evaluations
     *   inclusion of a warm-up period, designed to allow the JIT compiler to optimise its code
@@ -604,6 +604,56 @@ After core.reducers
 
 ####    Transients
 
+[Transient](https://clojure.org/reference/transients) data structures are always created from an existing persistent *Clojure* data structure. 
+Transient copy of a data structure can be obtained by calling *transient*. This creates a new transient data structure that is a copy of the source, and has the same performance characteristics. In fact, it mostly is the source data structure, and highlights the first feature of transients - creating one is O(1). It shares structure with its source, just as persistent copies share structure.
+Transients support the read-only interface of the source, i.e. you can call nth, get, count and fn-call a transient vector, just like a persistent vector.
+
+Transients do not support the persistent interface of the source data structure. *assoc, conj* etc will all throw exceptions, because transients are not persistent.
+
+Transients support a parallel set of 'changing' operations, with similar names followed by ! *- assoc!, conj!* etc. These do the same things as their persistent counterparts except the return values are themselves transient. Note in particular that transients are not designed to be bashed in-place. You must capture and use the return value in the next call. 
+
+In the following listing, there is an example of using *transients* to improve efficiency in this project:
+
+```clojure
+(defn populate-book-attributes-vector
+  "Populates book attribute vector with new entries"
+  [new-attributes existing-attributes]
+  (loop [i 0 v existing-attributes]
+    (if (< i (dec (count new-attributes)))
+      (recur (inc i) (conj v (nth new-attributes i)))
+      v)))
+
+(defn populate-book-attributes-vector-t
+  "Populates book attribute vector with new entries with transients implementation"
+  [new-attributes existing-attributes]
+  (loop [i 0 v (transient existing-attributes)]
+    (if (< i (dec (count new-attributes)))
+      (recur (inc i) (conj! v (nth new-attributes i)))
+      (persistent! v))))
+```
+*Listing 22 - Using transient to boost efficiency*
+
+Function *populate-book-attributes-vector-t* refers to the 'new', transient version of previous method. Introduced switch will produce better performance, which is visible in the *Criterium* benchmark output:
+
+```
+Evaluation count : 312 in 6 samples of 52 calls.
+             Execution time mean : 2.013205 ms
+    Execution time std-deviation : 101.188687 µs
+   Execution time lower quantile : 1.933496 ms ( 2.5%)
+   Execution time upper quantile : 2.181821 ms (97.5%)
+                   Overhead used : 1.615899 ns
+
+Found 1 outliers in 6 samples (16.6667 %)
+	low-severe	 1 (16.6667 %)
+ Variance from outliers : 13.8889 % Variance is moderately inflated by outliers
+Evaluation count : 438 in 6 samples of 73 calls.
+             Execution time mean : 1.382483 ms
+    Execution time std-deviation : 6.988258 µs
+   Execution time lower quantile : 1.371543 ms ( 2.5%)
+   Execution time upper quantile : 1.389634 ms (97.5%)
+                   Overhead used : 1.615899 ns
+```
+*Listing 23 - Criterium output after transient implementation*
 
 #### count vs empty?
 
@@ -631,7 +681,7 @@ When checking if a collection has no elements in it, two approaches are used in 
   (Math/log10 (/ (count dataSet)
                  (count (into [] (r/filter #(= mainSet %) dataSet))))))
 ``` 
-*Listing 22 - Implementation of empty, count and count + reducers*
+*Listing 24 - Implementation of empty, count and count + reducers*
 
 Notice that for the *core.reducers* [into[]](https://clojuredocs.org/clojure.core/into) is used alongside with reducing functions.
 Here is the benchmark comparison of those three approaches:
@@ -668,20 +718,41 @@ Evaluation count : 6 in 6 samples of 1 calls.
 Before core.reducers
 "Elapsed time: 1287.138953 msecs"
 -----------------
-After switching to empty?
+After switching empty?
 "Elapsed time: 589.396999 msecs"
 -----------------
 After core.reducers
 "Elapsed time: 391.387908 msecs"
 **************                   
 ```
-*Listing 23 - Criterium and time benchmarking output*
+*Listing 25 - Criterium and time benchmarking output*
+
+####    Usage of Criterium
+
+As mentioned before, tool used for benchmarking in this project is *Criterium*. It's very easy to use and provides a lot of valuable information. Here is the example of *Criterium* usage in this project:
+
+```clojure
+;;enable criterium in namspace
+(:require [criterium.core :refer :all]) 
+
+;;example of usage in algorithms-benchmark.clj
+(defn benchmark-recommender
+  []
+  (let [data (load-data-from-file "test\\resource\\testBookDataSet.csv")
+        refBook (first data)]
+    (quick-bench (recommend-books refBook 10 data))
+    (quick-bench (recommend-books-r refBook 10 data))))
+```
+*Listing 26 - Criterium usage example*
+
+Note that **not** all of the presented changes provide significant efficiency improvement with small amount of data, but since in this project we're dealing with huge amount of data, they actually were very successful. 
 
 ### Benchmark overview
 
 The algorithm is providing reasonable and pretty good recommendations, but still is very open for possible improvements. For example:
 *   Considering one or more additional attributes as a recommendation parameters, which should make recommendations more precise.
 *   Provide additional ponders to book attributes (in addition to tf/idf) in order to make some attributes to contribute more (or less) to similarity score.
+*   Introduce more techniques for boosting efficiency, like [chuned seq](https://clojuredocs.org/clojure.core/chunk)
 
 Regarding *Clojure* development, it could be a good decision for writing these kind of applications because of its powerful and yet very user-friendly functional machinery. Also development is less verbose and much faster then it was when writing *Java* version of algorithm. On the other hand, one of the biggest aggravating circumstances was finding answer for some question which is mostly because the *Clojure* community is still growing.
 
