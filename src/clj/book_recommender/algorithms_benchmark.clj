@@ -3,7 +3,8 @@
             [book-recommender.cosine-similarity.cosine-similarity-calculator :refer :all]
             [book-recommender.reader.csv-reader :refer :all]
             [book-recommender.engine.book-recommender-engine :refer :all]
-            [book-recommender.cosine-similarity.tfidf-calculator :refer :all]))
+            [book-recommender.cosine-similarity.tfidf-calculator :refer :all]
+            [book-recommender.cosine-similarity.vector-creator :refer :all]))
 
 (defn benchmark-idf
   []
@@ -72,3 +73,19 @@
     (time (recommend-books-r refBook 10 data))
     (println "**************")))
 
+(defn benchmark-populate-attributes-vector
+  []
+  (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")]
+    (quick-bench (populate-book-attributes-vector (vec (repeat 10000 "Tolstoj")) ["Author1", "Author2"]))
+    (quick-bench (populate-book-attributes-vector-t (vec (repeat 10000 "Tolstoj")) ["Author1", "Author2"]))))
+
+(defn benchmark-populate-attributes-time
+  []
+  (let [data (load-data-from-file "C:\\dev\\projects\\book-recommender\\test\\resource\\testBookDataSet.csv")]
+    (println "**************")
+    (println "Before transients")
+    (time (populate-book-attributes-vector (vec (repeat 10000 "Tolstoj")) ["Author1", "Author2"]))
+    (println "-----------------")
+    (println "After transients")
+    (time (populate-book-attributes-vector-t (vec (repeat 10000 "Tolstoj")) ["Author1", "Author2"]))
+    (println "**************")))

@@ -16,7 +16,22 @@
 
 
 (defn create-book-vector
-  "Creates b tf/idf valued book vector"
+  "Creates tf/idf valued book vector"
   [ref-book other-book data]
   (map #(* (calculate-tfidf % ref-book other-book data)) [:author_name :author_movement :genre]))
 
+(defn populate-book-attributes-vector
+  "Populates book attribute vector with new entries"
+  [new-attributes existing-attributes]
+  (loop [i 0 v existing-attributes]
+    (if (< i (dec (count new-attributes)))
+      (recur (inc i) (conj v (nth new-attributes i)))
+      v)))
+
+(defn populate-book-attributes-vector-t
+  "Populates book attribute vector with new entries with transients implementation"
+  [new-attributes existing-attributes]
+  (loop [i 0 v (transient existing-attributes)]
+    (if (< i (dec (count new-attributes)))
+      (recur (inc i) (conj! v (nth new-attributes i)))
+      (persistent! v))))
